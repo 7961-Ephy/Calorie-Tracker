@@ -1,0 +1,28 @@
+<!-- templates/navbar.html -->
+<nav class="bg-blue-600 p-4">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <a href="/" class="text-white text-xl font-bold">Calorie Tracker</a>
+    <div class="flex space-x-4">
+      <a
+        href="{% url 'dashboard' %}"
+        class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-lg"
+        >Dashboard</a
+      >
+
+      {% if user.is_authenticated %}
+      <a
+        href="{% url 'logout' %}"
+        class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-lg"
+        >Logout</a
+      >
+
+      {% else %}
+      <a
+        href="{% url 'login' %}"
+        class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-lg"
+        >Login</a
+      >
+      {% endif %}
+    </div>
+  </div>
+</nav>

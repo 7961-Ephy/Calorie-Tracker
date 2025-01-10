@@ -1,0 +1,171 @@
+{% extends 'base.html' %} {% block content %}
+<!-- Daily Summary Card -->
+<div
+  class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-gray-100 mb-8"
+>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold text-gray-800">Today's Summary</h2>
+      <div class="flex items-baseline space-x-2">
+        <div class="text-5xl font-bold text-indigo-600">
+          {{ total_calories }}
+        </div>
+        <div class="text-xl text-gray-500 font-medium">calories</div>
+      </div>
+      <p class="text-gray-600 text-lg">
+        Daily Goal:
+        <span class="font-semibold text-indigo-600">{{ daily_goal }}</span>
+        calories
+      </p>
+    </div>
+    <div
+      class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 flex flex-col justify-center"
+    >
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-gray-700 font-medium">Progress</span>
+        <span class="text-lg font-semibold text-indigo-600"
+          >{{ progress|floatformat:1 }}%</span
+        >
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-3">
+        <div
+          class="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full transition-all duration-500"
+          style="width: {{ progress }}%"
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Food Form -->
+<div
+  class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-gray-100 mb-8"
+>
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Add Food Item</h2>
+  <form method="post" action="{% url 'add_food' %}" class="space-y-6">
+    {% csrf_token %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="space-y-2">
+        <label class="block text-sm font-semibold text-gray-700">
+          Food Name
+        </label>
+        <input
+          type="text"
+          name="name"
+          required
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+          placeholder="Enter food name"
+        />
+      </div>
+      <div class="space-y-2">
+        <label class="block text-sm font-semibold text-gray-700">
+          Calories
+        </label>
+        <input
+          type="number"
+          name="calories"
+          required
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+          placeholder="Enter calories"
+        />
+      </div>
+      <div class="flex items-end">
+        <button
+          type="submit"
+          class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-indigo-500/30 transition-all duration-200 hover:shadow-indigo-500/50"
+        >
+          Add Food
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Food List -->
+<div
+  class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-gray-100"
+>
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Today's Food Log</h2>
+    <form method="post" action="{% url 'reset_day' %}">
+      {% csrf_token %}
+      <button
+        type="submit"
+        class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-lg shadow-red-500/30 transition-all duration-200 hover:shadow-red-500/50"
+      >
+        Reset Day
+      </button>
+    </form>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead>
+        <tr>
+          <th
+            class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+          >
+            Time
+          </th>
+          <th
+            class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+          >
+            Food Item
+          </th>
+          <th
+            class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+          >
+            Calories
+          </th>
+          <th
+            class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider"
+          >
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {% for entry in entries %}
+        <tr class="hover:bg-gray-50/50 transition-colors duration-200">
+          <td
+            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium"
+          >
+            {{ entry.time|time:"h:i A" }}
+          </td>
+          <td
+            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium"
+          >
+            {{ entry.food.name }}
+          </td>
+          <td
+            class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-indigo-600"
+          >
+            {{ entry.food.calories }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <form
+              method="post"
+              action="{% url 'delete_entry' entry.id %}"
+              class="inline"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="text-sm font-medium text-red-500 hover:text-red-700 transition-colors duration-200"
+              >
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+            No food entries for today
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
